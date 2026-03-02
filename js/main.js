@@ -51,10 +51,10 @@ let app = new Vue({
         },
         sale(){
             if (this.onSale) {
-                return this.brand + ' ' + this.product + ' are on sale';
+                return this.brand + ' ' + this.product + ' is on sale';
             }
             else {
-                return this.brand + ' ' + this.product + ' are not on sale :('
+                return this.brand + ' ' + this.product + ' is not on sale :('
             }
         }
     }
