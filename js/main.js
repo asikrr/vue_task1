@@ -23,6 +23,7 @@ Vue.component('product', {
             <ul>
                 <li v-for="size in sizes">{{ size }}</li>
             </ul>
+            <a :href="link">More products like this</a>
             <p>{{ description }}</p>
             <button
                     v-on:click="addToCart"
@@ -32,7 +33,6 @@ Vue.component('product', {
                 Add to cart
             </button>
             <button @click="removeFromCart">Remove from cart</button>
-            <a :href="link">More products like this</a>
         </div>
         <product-tabs :reviews="reviews" :shipping="shipping" :details="details"></product-tabs>
     </div>
@@ -175,7 +175,6 @@ Vue.component('product-review', {
             <p>
                 <input type="submit" value="Submit"> 
             </p>
-
         </form>
     `,
     data() {
@@ -274,13 +273,8 @@ let app = new Vue({
         updateCart(id) {
             this.cart.push(id);
         },
-        removeFromCart(id) {
-            for(let i = this.cart.length - 1; i >= 0; i--) {
-                if(this.cart[i] === id) {
-                    this.cart.splice(i, 1);
-                    break;
-                }
-            }
+        removeFromCart() {
+            this.cart.pop();
         }
     }
 })
