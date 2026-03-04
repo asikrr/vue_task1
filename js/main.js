@@ -9,6 +9,8 @@ Vue.component('product', {
 
         <div class="product-info">
             <h1>{{ title }}</h1>
+            <p>Price: $ {{ price }}</p>
+            <p>Material: {{ material }}</p>
             <span v-show="onSale">{{ sale }}</span>
             <p v-if="inStock > 10">In stock</p>
             <p v-else-if="inStock <= 10 && inStock > 0">Almost sold out!</p>
@@ -58,13 +60,17 @@ Vue.component('product', {
                     variantId: 2234,
                     variantColor: 'green',
                     variantImage: "./assets/vmSocks-green-onWhite.jpg",
-                    variantQuantity: 10
+                    variantQuantity: 10,
+                    basePrice: 10,
+                    material: [{name: 'cotton', coefficient: 1.1}, {name: 'polyester', coefficient: 0.8}]
                 },
                 {
                     variantId: 2235,
                     variantColor: 'blue',
                     variantImage: "./assets/vmSocks-blue-onWhite.jpg",
-                    variantQuantity: 0
+                    variantQuantity: 0,
+                    basePrice: 20,
+                    material: [{name: 'cashmere', coefficient: 1.8}, {name: 'wool', coefficient: 1.2}]
                 }
             ],
             sizes: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
@@ -73,7 +79,11 @@ Vue.component('product', {
     },
     methods: {
         addToCart() {
-            this.$emit('add-to-cart', this.variants[this.selectedVariant].variantId);
+            let item = {
+                id: this.variants[this.selectedVariant].variantId,
+                price: this.price
+            }
+            this.$emit('add-to-cart', item);
         },
         removeFromCart() {
             this.$emit('remove-from-cart', this.variants[this.selectedVariant].variantId);
@@ -104,6 +114,17 @@ Vue.component('product', {
             else {
                 return this.brand + ' ' + this.product + ' is not on sale :('
             }
+        },
+        price() {
+            let price = this.variants[this.selectedVariant].basePrice;
+            let materials = this.variants[this.selectedVariant].material;
+            let totalCoefficient = 1;
+            materials.forEach((material) => totalCoefficient *= material.coefficient);
+            return Number((price * totalCoefficient).toFixed(2));
+        },
+        material() {
+            let materials = this.variants[this.selectedVariant].material;
+            return materials.map((material) => material.name).join(', ');
         },
         shipping() {
             if (this.premium) {
@@ -275,6 +296,21 @@ let app = new Vue({
         },
         removeFromCart() {
             this.cart.pop();
+        },
+        countTotalPrice() {
+            let total = 0;
+            this.cart.forEach(item => {
+                total += item.price;
+            })
+
+            let discountedPrice = 0;
+            if (this.cart.length >= 4) {
+                discountedPrice = total * 0.9;
+            }
+            return {
+                total: total.toFixed(2),
+                discountedPrice: discountedPrice.toFixed(2)
+            };
         }
     }
 })
